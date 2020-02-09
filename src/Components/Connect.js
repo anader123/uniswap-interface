@@ -3,8 +3,11 @@ import { onboard, web3 } from '../utils/onboard';
 import { ERC20ABI, factoryABI, exchangeABI } from '../utils/contractABIs';
 import { Button } from 'react-bootstrap';
 import { tokenData } from '../utils/tokenData';
+
+// Components
 import DropdownMenu from '../Components/DropdownMenu/DropdownMenu';
 import CreateExchange from './CreateExchange/CreateExchange';
+import SwapButton from '../Components/SwapButton/SwapButton';
 
 
 export default class Connect extends Component {
@@ -14,14 +17,10 @@ export default class Connect extends Component {
         this.state = {
             address: '',
             balance: '',
-            token1Symbol: 'ETH',
-            token2Symbol: 'DAI',
-            token1Address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            token2Address: '',
-            token1ExchangeAddress: '',
-            token2ExchangeAddress: '',
-            token1Instance: {},
-            token2Instance: {},
+            tokenSymbol: 'DAI',
+            tokenAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+            tokenInstance: {},
+            exchangeInstance: {},
             factoryInstance: {},
             walletConnected: false,
             factoryAddress: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95'
@@ -39,43 +38,37 @@ export default class Connect extends Component {
 
             const factoryInstance = new web3.eth.Contract(factoryABI, this.state.factoryAddress);
 
+            const exchangeAddress = await factoryInstance.methods.getExchange(this.state.tokenAddress).call();
+            const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
+
             this.setState({
                 address: currentState.address,
                 balance,
                 walletConnected: true,
-                factoryInstance
+                factoryInstance,
+                exchangeInstance
             });
 
             // Creating Instance for DAI after user connects wallet
-            this.setTokenInstance(0, 2);
+            this.setTokenInstance(0);
         }
     }
 
-    setTokenInstance = (token, tokenNumber) => {
+    setTokenInstance = async (token) => {
         const tokenAddress = tokenData[token].address;
         const tokenSymbol = tokenData[token].symbol
 
         const tokenInstance = new web3.eth.Contract(ERC20ABI, tokenAddress);
+        const exchangeAddress = await this.state.factoryInstance.methods.getExchange(tokenAddress).call();
+        console.log(exchangeAddress)
+        const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
 
-        const exchangeAddress = this.state.factoryInstance.methods.getExchange(tokenAddress).call();
-
-        if(tokenNumber === 1 && this.state.token1Symbol !== tokenSymbol) {
-            this.setState({ 
-                token1Instance: tokenInstance,
-                token1Symbol: tokenSymbol,
-                token1Address: tokenAddress,
-                token1ExchangeAddress: exchangeAddress
-            });
-        }
-        else if(tokenNumber !== 5) {
-            this.setState({ 
-                token2Instance: tokenInstance,
-                token2Symbol: tokenSymbol,
-                token2Address: tokenAddress,
-                token2ExchangeAddress: exchangeAddress
-            });
-        }
-        
+        this.setState({ 
+            tokenInstance: tokenInstance,
+            tokenSymbol: tokenSymbol,
+            tokenAddress: tokenAddress,
+            exchangeInstance
+        });
     }
 
     render() {
@@ -83,24 +76,26 @@ export default class Connect extends Component {
             walletConnected, 
             address, 
             balance, 
-            token1Symbol, 
-            token2Symbol,
-            factoryInstance
+            tokenSymbol, 
+            factoryInstance,
+            exchangeInstance
         } = this.state;
+
         return (
             <div>
-                <div>{address}</div>
-                <div>{balance}</div>
                 {!walletConnected ?
                 <Button onClick={this.connectWallet} variant="primary">Connect Wallet</Button>
                 :
                 <div>
+                    <div>{address}</div>
+                    <div>{balance} ETH</div>
                     <DropdownMenu 
                         setTokenInstance={this.setTokenInstance} 
-                        token1Symbol={token1Symbol} 
-                        token2Symbol={token2Symbol}
+                        tokenSymbol={tokenSymbol} 
                     />
+                    <SwapButton address={address} exchangeInstance={exchangeInstance} />
                     <CreateExchange address={address} factoryInstance={factoryInstance}/>
+                    
                 </div>
                 }
             </div>
