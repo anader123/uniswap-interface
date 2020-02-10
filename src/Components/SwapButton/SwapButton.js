@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
 import { web3 } from '../../utils/onboard';
+import { formatTokenValue } from '../../utils/format'
 
 export default class SwapButton extends Component {
     constructor() {
         super();
         this.state = {
             weiAmount: '',
-            outputAmount: ''
+            outputAmount: '0'
         }
     }
 
@@ -22,12 +23,15 @@ export default class SwapButton extends Component {
 
     handleInput = async (ethAmount) => {
         const { tokenInstance, exchangeAddress } = this.props;
-        if(ethAmount !== '') {
+        if(ethAmount === '') {
+            ethAmount = '0';
+        }
             const weiAmount = web3.utils.toWei(ethAmount);
 
             // Sell ETH for ERC20
             const inputAmount = weiAmount;
             const inputReserve = await web3.eth.getBalance(exchangeAddress);
+
             const outputReserve = await tokenInstance.methods.balanceOf(exchangeAddress).call();
 
             // Output amount bought
@@ -35,19 +39,18 @@ export default class SwapButton extends Component {
             const denominator = inputReserve * 1000 + inputAmount * 997;
             const outputAmount = numerator / denominator;
 
-            console.log(inputReserve, outputReserve)
-            const formattedOutpuAmount = web3.utils.fromWei(outputAmount.toString());
+            const formattedOutpuAmount = await formatTokenValue(outputAmount, tokenInstance);
             this.setState({ weiAmount, outputAmount: formattedOutpuAmount });
-        }
     }
     
     render() {
+        const { tokenSymbol } = this.props;
         return (
             <div>
                 <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)}/>
                 <br/>
                 <Button onClick={this.swapToken}>Swap</Button>
-                <p>You will receive {this.state.outputAmount}</p>
+                <p>You will receive approximately {this.state.outputAmount} {tokenSymbol}</p>
             </div>
         )
     }

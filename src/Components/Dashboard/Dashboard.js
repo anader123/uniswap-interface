@@ -26,7 +26,7 @@ export default class Dashboard extends Component {
             exchangeInstance: {},
             factoryInstance: {},
             walletConnected: false,
-            swapToken: true
+            swapToken: true,
         }
     }
 
@@ -64,14 +64,14 @@ export default class Dashboard extends Component {
 
         const tokenInstance = new web3.eth.Contract(ERC20ABI, tokenAddress);
         const exchangeAddress = await this.state.factoryInstance.methods.getExchange(tokenAddress).call();
-
         const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
 
         this.setState({ 
             tokenInstance: tokenInstance,
             tokenSymbol: tokenSymbol,
             tokenAddress: tokenAddress,
-            exchangeInstance
+            exchangeInstance,
+            exchangeAddress
         });
     }
 
@@ -89,7 +89,7 @@ export default class Dashboard extends Component {
             exchangeInstance,
             swapToken,
             exchangeAddress,
-            tokenInstance
+            tokenInstance,
         } = this.state;
 
         return (
@@ -117,6 +117,7 @@ export default class Dashboard extends Component {
                                 exchangeInstance={exchangeInstance} 
                                 exchangeAddress={exchangeAddress} 
                                 tokenInstance={tokenInstance}
+                                tokenSymbol={tokenSymbol}
                             />
                         </div>
                     :
