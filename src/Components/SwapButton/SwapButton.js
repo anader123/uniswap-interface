@@ -6,7 +6,8 @@ export default class SwapButton extends Component {
     constructor() {
         super();
         this.state = {
-            weiAmount: ''
+            weiAmount: '',
+            outputAmount: ''
         }
     }
 
@@ -17,13 +18,26 @@ export default class SwapButton extends Component {
         let deadline = new Date().getTime() + 600000;
         const min_tokens = 1;
         exchangeInstance.methods.ethToTokenSwapInput(min_tokens, deadline).send({ from: address, value: weiAmount})
-        console.log(exchangeInstance.methods.ethToTokenSwapInput)
     }
 
-    handleInput = (ethAmount) => {
+    handleInput = async (ethAmount) => {
+        const { tokenInstance, exchangeAddress } = this.props;
         if(ethAmount !== '') {
             const weiAmount = web3.utils.toWei(ethAmount);
-            this.setState({ weiAmount });
+
+            // Sell ETH for ERC20
+            const inputAmount = weiAmount;
+            const inputReserve = await web3.eth.getBalance(exchangeAddress);
+            const outputReserve = await tokenInstance.methods.balanceOf(exchangeAddress).call();
+
+            // Output amount bought
+            const numerator = inputAmount * outputReserve * 997;
+            const denominator = inputReserve * 1000 + inputAmount * 997;
+            const outputAmount = numerator / denominator;
+
+            console.log(inputReserve, outputReserve)
+            const formattedOutpuAmount = web3.utils.fromWei(outputAmount.toString());
+            this.setState({ weiAmount, outputAmount: formattedOutpuAmount });
         }
     }
     
@@ -31,7 +45,9 @@ export default class SwapButton extends Component {
         return (
             <div>
                 <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)}/>
+                <br/>
                 <Button onClick={this.swapToken}>Swap</Button>
+                <p>You will receive {this.state.outputAmount}</p>
             </div>
         )
     }

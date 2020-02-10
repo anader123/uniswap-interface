@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import Connect from './Components/Connect';
+import Dashboard from './Components/Dashboard/Dashboard';
 
 function App() {
   
   return (
     <div className="App">
-      <Connect />
+      <Dashboard />
     </div>
   );
 }

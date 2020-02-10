@@ -2,11 +2,13 @@ import React, { Component } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 
 export default class DropdownMenu extends Component {
+
     render() {
         const { setTokenInstance, tokenSymbol } = this.props;
         return (
             <div>
                 <h4>Select a token to swap for Ether</h4>
+                <br/>
                 <DropdownButton
                     title={tokenSymbol}
                     variant='primary'
@@ -19,6 +21,7 @@ export default class DropdownMenu extends Component {
                     <Dropdown.Item onSelect={() => setTokenInstance(3)} eventKey="4">USDC</Dropdown.Item>
                     <Dropdown.Item onSelect={() => setTokenInstance(4)} eventKey="5">sETH</Dropdown.Item>
                 </DropdownButton>
+                <br/>
             </div>
         )
     }
