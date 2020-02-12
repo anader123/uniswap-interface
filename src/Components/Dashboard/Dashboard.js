@@ -15,28 +15,29 @@ import SwapButton from '../SwapButton/SwapButton';
 import { connect } from 'react-redux';
 import {
     setAddress,
+    setBalance,
+    toggleWalletConnected,
+    setTokenSymbol,
+    setTokenAddress,
+    createTokenInstance,
+    createExchangeInstance,
+    setExchangeAddress,
+    createFactoryInstance,
+    toggleSwapToken
 } from '../../redux/actions';
 
 class Dashboard extends Component {
-    constructor() {
-        super();
-
-        this.state = {
-            balance: '',
-            tokenSymbol: 'DAI',
-            tokenAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            factoryAddress: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95',
-            exchangeAddress: '',
-            tokenInstance: {},
-            exchangeInstance: {},
-            factoryInstance: {},
-            walletConnected: false,
-            swapToken: true,
-        }
-    }
 
     connectWallet = async () => {
-        const { setAddress } = this.props;
+        const { 
+            setAddress,
+            setBalance,
+            toggleWalletConnected,
+            tokenAddress,
+            factoryAddress,
+            createFactoryInstance,
+            createExchangeInstance
+        } = this.props;
         
         const result = await onboard.walletSelect();
         if(result) {
@@ -45,22 +46,19 @@ class Dashboard extends Component {
 
             const weiBalance = await web3.eth.getBalance(currentState.address);
             const balance = web3.utils.fromWei(weiBalance);
+            setBalance(balance);
 
-            const factoryInstance = new web3.eth.Contract(factoryABI, this.state.factoryAddress);
+            const factoryInstance = new web3.eth.Contract(factoryABI, factoryAddress);
 
-            const exchangeAddress = await factoryInstance.methods.getExchange(this.state.tokenAddress).call();
-            const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
+            const exchangeAddress = await factoryInstance.methods.getExchange(tokenAddress).call();
+            const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress);
 
+            // Redux
             setAddress(currentState.address);
-
-            this.setState({
-                address: currentState.address,
-                balance,
-                walletConnected: true,
-                factoryInstance,
-                exchangeInstance,
-                exchangeAddress
-            });
+            toggleWalletConnected(true);
+            createFactoryInstance(factoryInstance);
+            createExchangeInstance(exchangeInstance);
+            setExchangeAddress(exchangeAddress);
 
             // Creating Instance for DAI after user connects wallet
             this.setTokenInstance(0);
@@ -68,39 +66,46 @@ class Dashboard extends Component {
     }
 
     setTokenInstance = async (token) => {
+        const { 
+            setTokenSymbol,
+            setTokenAddress,
+            createTokenInstance,
+            createExchangeInstance,
+            setExchangeAddress,
+            factoryInstance
+        } = this.props;
         const tokenAddress = tokenData[token].address;
         const tokenSymbol = tokenData[token].symbol
 
         const tokenInstance = new web3.eth.Contract(ERC20ABI, tokenAddress);
-        const exchangeAddress = await this.state.factoryInstance.methods.getExchange(tokenAddress).call();
+        const exchangeAddress = await factoryInstance.methods.getExchange(tokenAddress).call();
         const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
 
-        this.setState({ 
-            tokenInstance: tokenInstance,
-            tokenSymbol: tokenSymbol,
-            tokenAddress: tokenAddress,
-            exchangeInstance,
-            exchangeAddress
-        });
+        // Redux
+        setTokenSymbol(tokenSymbol);
+        setTokenAddress(tokenAddress);
+        createTokenInstance(tokenInstance);
+        createExchangeInstance(exchangeInstance);
+        setExchangeAddress(exchangeAddress);
     }
 
     toggleSwap = (bool) => {
-        this.setState({ swapToken: bool });
+        toggleSwapToken(bool);
     }
 
     render() {
         const { 
-            walletConnected, 
-            balance, 
             tokenSymbol, 
             factoryInstance,
             exchangeInstance,
             swapToken,
             exchangeAddress,
             tokenInstance,
-        } = this.state;
+            address, 
+            balance, 
+            walletConnected
+        } = this.props;
 
-        const { address } = this.props;
         return (
             <div>
                 <br/>
@@ -143,4 +148,15 @@ function mapStateToProps(state) {
     return state;
 }
 
-export default connect(mapStateToProps, {setAddress})(Dashboard);
+export default connect(mapStateToProps, {
+    setAddress, 
+    setBalance,
+    toggleWalletConnected,
+    setTokenSymbol,
+    setTokenAddress,
+    createTokenInstance,
+    createExchangeInstance,
+    setExchangeAddress,
+    createFactoryInstance,
+    toggleSwapToken
+})(Dashboard);

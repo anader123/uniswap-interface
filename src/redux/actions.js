@@ -12,7 +12,6 @@ const TOGGLE_SWAP_TOKEN = 'TOGGLE_SWAP_TOKEN';
 
 // Action Builders 
 export const setAddress = (address) => {
-    console.log(address);
     return {
         type: SET_ADDRESS, 
         payload: address

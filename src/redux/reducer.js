@@ -27,7 +27,6 @@ const TOGGLE_SWAP_TOKEN = 'TOGGLE_SWAP_TOKEN';
 
 // Reducer
 export default function reducer(state = initialState, action) {
-    console.log(action)
     switch(action.type) {
         case SET_ADDRESS:
             return {...state, address: action.payload};
