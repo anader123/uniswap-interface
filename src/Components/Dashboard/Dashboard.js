@@ -1,22 +1,27 @@
 import React, { Component } from 'react'
+import { Button } from 'react-bootstrap';
+
+// Ethereum
 import { onboard, web3 } from '../../utils/onboard';
 import { ERC20ABI, factoryABI, exchangeABI } from '../../utils/contractABIs';
 import { tokenData } from '../../utils/tokenData';
-import { Button } from 'react-bootstrap';
-
 
 // Components
 import DropdownMenu from '../DropdownMenu/DropdownMenu';
 import CreateExchange from '../CreateExchange/CreateExchange';
 import SwapButton from '../SwapButton/SwapButton';
 
+// Redux
+import { connect } from 'react-redux';
+import {
+    setAddress,
+} from '../../redux/actions';
 
-export default class Dashboard extends Component {
+class Dashboard extends Component {
     constructor() {
         super();
 
         this.state = {
-            address: '',
             balance: '',
             tokenSymbol: 'DAI',
             tokenAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -31,6 +36,8 @@ export default class Dashboard extends Component {
     }
 
     connectWallet = async () => {
+        const { setAddress } = this.props;
+        
         const result = await onboard.walletSelect();
         if(result) {
             await onboard.walletCheck();
@@ -43,6 +50,8 @@ export default class Dashboard extends Component {
 
             const exchangeAddress = await factoryInstance.methods.getExchange(this.state.tokenAddress).call();
             const exchangeInstance = new web3.eth.Contract(exchangeABI, exchangeAddress)
+
+            setAddress(currentState.address);
 
             this.setState({
                 address: currentState.address,
@@ -82,7 +91,6 @@ export default class Dashboard extends Component {
     render() {
         const { 
             walletConnected, 
-            address, 
             balance, 
             tokenSymbol, 
             factoryInstance,
@@ -92,6 +100,7 @@ export default class Dashboard extends Component {
             tokenInstance,
         } = this.state;
 
+        const { address } = this.props;
         return (
             <div>
                 <br/>
@@ -129,3 +138,9 @@ export default class Dashboard extends Component {
         )
     }
 }
+
+function mapStateToProps(state) {
+    return state;
+}
+
+export default connect(mapStateToProps, {setAddress})(Dashboard);
