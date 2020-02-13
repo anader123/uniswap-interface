@@ -9,7 +9,7 @@ import { tokenData } from '../../utils/tokenData';
 // Components
 import DropdownMenu from '../DropdownMenu/DropdownMenu';
 import CreateExchange from '../CreateExchange/CreateExchange';
-import SwapButton from '../SwapButton/SwapButton';
+// import SwapButton from '../SwapButton/SwapButton';
 
 // Redux
 import { connect } from 'react-redux';
@@ -23,7 +23,9 @@ import {
     createExchangeInstance,
     setExchangeAddress,
     createFactoryInstance,
-    toggleSwapToken
+    toggleSwapToken,
+    setOutputAmount,
+    setWeiAmount
 } from '../../redux/actions';
 
 class Dashboard extends Component {
@@ -72,7 +74,9 @@ class Dashboard extends Component {
             createTokenInstance,
             createExchangeInstance,
             setExchangeAddress,
-            factoryInstance
+            factoryInstance,
+            setOutputAmount,
+            setWeiAmount
         } = this.props;
         const tokenAddress = tokenData[token].address;
         const tokenSymbol = tokenData[token].symbol
@@ -87,10 +91,8 @@ class Dashboard extends Component {
         createTokenInstance(tokenInstance);
         createExchangeInstance(exchangeInstance);
         setExchangeAddress(exchangeAddress);
-    }
-
-    toggleSwap = (bool) => {
-        toggleSwapToken(bool);
+        setOutputAmount('0');
+        setWeiAmount('0')
     }
 
     render() {
@@ -103,7 +105,8 @@ class Dashboard extends Component {
             tokenInstance,
             address, 
             balance, 
-            walletConnected
+            walletConnected,
+            toggleSwapToken
         } = this.props;
 
         return (
@@ -119,20 +122,19 @@ class Dashboard extends Component {
                     <div>Address: {address}</div>
                     <div>Balance: {balance} ETH</div>
                     <br/>
-                    <span onClick={() => this.toggleSwap(true)}>Swap </span><span onClick={() => this.toggleSwap(false)}> Create Exchange</span>
+                    <span onClick={() => toggleSwapToken(true)}>Swap </span><span onClick={() => toggleSwapToken(false)}> Create Exchange</span>
                     <br/>
                     {swapToken ?
                         <div>
                             <DropdownMenu 
-                            setTokenInstance={this.setTokenInstance} 
-                            tokenSymbol={tokenSymbol} 
-                            />
-                            <SwapButton address={address} 
+                                setTokenInstance={this.setTokenInstance} 
+                                tokenSymbol={tokenSymbol} 
+                                address={address} 
                                 exchangeInstance={exchangeInstance} 
                                 exchangeAddress={exchangeAddress} 
                                 tokenInstance={tokenInstance}
-                                tokenSymbol={tokenSymbol}
                             />
+
                         </div>
                     :
                         <CreateExchange address={address} factoryInstance={factoryInstance}/>
@@ -158,5 +160,7 @@ export default connect(mapStateToProps, {
     createExchangeInstance,
     setExchangeAddress,
     createFactoryInstance,
-    toggleSwapToken
+    toggleSwapToken,
+    setOutputAmount,
+    setWeiAmount
 })(Dashboard);

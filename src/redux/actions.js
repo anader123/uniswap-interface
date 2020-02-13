@@ -4,6 +4,8 @@ const SET_BALANCE = 'SET_BALANCE';
 const SET_TOKEN_SYMBOL = 'SET_TOKEN_SYMBOL';
 const SET_TOKEN_ADDRESS = 'SET_TOKEN_ADDRESS';
 const SET_EXCHANGE_ADDRESS = 'SET_EXCHANGE_ADDRESS';
+const SET_OUTPUT_AMOUNT = 'SET_OUTPUT_AMOUNT';
+const SET_WEI_AMOUNT = 'SET_WEI_AMOUNT';
 const CREATE_TOKEN_INSTANCE = 'CREATE_TOKEN_INSTANCE';
 const CREATE_EXCHANGE_INSTANCE = 'CREATE_EXCHANGE_INSTANCE';
 const CREATE_FACTORY_INSTANCE = 'CREATE_FACTORY_INSTANCE';
@@ -43,6 +45,21 @@ export const setExchangeAddress = (address) => {
     return {
         type: SET_EXCHANGE_ADDRESS, 
         payload: address
+    }
+}
+
+export const setOutputAmount = (amount) => {
+    return {
+        type: SET_OUTPUT_AMOUNT, 
+        payload: amount
+    }
+}
+
+export const setWeiAmount = (amount) => {
+    console.log(amount)
+    return {
+        type: SET_WEI_AMOUNT, 
+        payload: amount
     }
 }
 

@@ -3,12 +3,17 @@ import { Button } from 'react-bootstrap';
 import { web3 } from '../../utils/onboard';
 import { formatTokenValue } from '../../utils/format'
 
-export default class SwapButton extends Component {
+// Redux
+import { connect } from 'react-redux';
+import {
+    setOutputAmount
+} from '../../redux/actions';
+
+class SwapButton extends Component {
     constructor() {
         super();
         this.state = {
             weiAmount: '',
-            outputAmount: '0'
         }
     }
 
@@ -22,7 +27,7 @@ export default class SwapButton extends Component {
     }
 
     handleInput = async (ethAmount) => {
-        const { tokenInstance, exchangeAddress } = this.props;
+        const { tokenInstance, exchangeAddress, setOutputAmount } = this.props;
         if(ethAmount === '') {
             ethAmount = '0';
         }
@@ -40,18 +45,29 @@ export default class SwapButton extends Component {
             const outputAmount = numerator / denominator;
 
             const formattedOutpuAmount = await formatTokenValue(outputAmount, tokenInstance);
-            this.setState({ weiAmount, outputAmount: formattedOutpuAmount });
+            this.setState({ weiAmount });
+
+            // Redux 
+            setOutputAmount(formattedOutpuAmount);
     }
     
     render() {
-        const { tokenSymbol } = this.props;
+        const { tokenSymbol, outputAmount } = this.props;
         return (
             <div>
                 <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)}/>
                 <br/>
                 <Button onClick={this.swapToken}>Swap</Button>
-                <p>You will receive approximately {this.state.outputAmount} {tokenSymbol}</p>
+                <p>You will receive approximately {outputAmount} {tokenSymbol}</p>
             </div>
         )
     }
 }
+
+function mapStateToProps(state) {
+    return state;
+}
+
+export default connect(mapStateToProps, {
+    setOutputAmount
+})(SwapButton);

@@ -11,6 +11,8 @@ const initialState = {
     factoryInstance: {},
     walletConnected: false,
     swapToken: true,
+    outputAmount: '0',
+    weiAmount: '0'
 }
 
 // Action Types
@@ -19,6 +21,8 @@ const SET_BALANCE = 'SET_BALANCE';
 const SET_TOKEN_SYMBOL = 'SET_TOKEN_SYMBOL';
 const SET_TOKEN_ADDRESS = 'SET_TOKEN_ADDRESS';
 const SET_EXCHANGE_ADDRESS = 'SET_EXCHANGE_ADDRESS';
+const SET_OUTPUT_AMOUNT = 'SET_OUTPUT_AMOUNT';
+const SET_WEI_AMOUNT = 'SET_WEI_AMOUNT';
 const CREATE_TOKEN_INSTANCE = 'CREATE_TOKEN_INSTANCE';
 const CREATE_EXCHANGE_INSTANCE = 'CREATE_EXCHANGE_INSTANCE';
 const CREATE_FACTORY_INSTANCE = 'CREATE_FACTORY_INSTANCE';
@@ -38,6 +42,10 @@ export default function reducer(state = initialState, action) {
             return {...state, tokenAddress: action.payload};
         case SET_EXCHANGE_ADDRESS:
             return {...state, exchangeAddress: action.payload};
+        case SET_OUTPUT_AMOUNT:
+            return {...state, outputAmount: action.payload};
+        case SET_WEI_AMOUNT:
+            return {...state, weiAmount: action.payload};
         case CREATE_TOKEN_INSTANCE:
             return {...state, tokenInstance: action.payload};
         case CREATE_EXCHANGE_INSTANCE:
@@ -47,7 +55,7 @@ export default function reducer(state = initialState, action) {
         case TOGGLE_WALLET_CONNECTED:
             return {...state, walletConnected: action.payload};
         case TOGGLE_SWAP_TOKEN:
-            return {...state, walletConnected: action.payload};
+            return {...state, swapToken: action.payload};
         default:
             return state;
     }
