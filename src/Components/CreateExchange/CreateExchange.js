@@ -33,7 +33,7 @@ export default class CreateExchange extends Component {
     callCreateExchange = async (tokenAddress) => {
         const { factoryInstance, address } = this.props;
 
-        if(tokenAddress !== '') {
+        if(tokenAddress.length === 42) {
             factoryInstance.methods.createExchange(tokenAddress).send({ from: address});
         }
     }
@@ -45,9 +45,16 @@ export default class CreateExchange extends Component {
                 <h2>Create an Exchange</h2>
                 <label>Input the address of a token you would like to create a Uniswap Pool for</label>
                 <br></br>
-                <input type='text' value={tokenAddress} onChange={(event) => this.handleInput(event.target.value)}/>
-                {tokenExists?<div>That token already has a pool</div>:<div/>}
-                <button onClick={() => this.callCreateExchange(tokenAddress)} disabled={tokenExists}>Create</button>
+                <form
+                    onSubmit={event => {
+                        event.preventDefault();
+                        this.callCreateExchange(tokenAddress)
+                    }}
+                >
+                    <input type='text' placeholder='Token Address' value={tokenAddress} onChange={(event) => this.handleInput(event.target.value)}/>
+                    {tokenExists?<div>That token already has a pool</div>:<div/>}
+                    <button type='submit' required disabled={tokenExists}>Create</button>
+                </form>
             </div>
         )
     }

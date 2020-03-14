@@ -9,7 +9,6 @@ import { tokenData } from '../../utils/tokenData';
 // Components
 import DropdownMenu from '../DropdownMenu/DropdownMenu';
 import CreateExchange from '../CreateExchange/CreateExchange';
-// import SwapButton from '../SwapButton/SwapButton';
 
 // Redux
 import { connect } from 'react-redux';

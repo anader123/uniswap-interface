@@ -3,7 +3,8 @@ import { Dropdown, DropdownButton, Button } from 'react-bootstrap';
 
 // Ethereum
 import { web3 } from '../../utils/onboard';
-import { formatTokenValue } from '../../utils/format'
+import { formatTokenValue } from '../../utils/format';
+import { tokenData } from '../../utils/tokenData';
 
 // Redux
 import { connect } from 'react-redux';
@@ -66,20 +67,25 @@ class DropdownMenu extends Component {
                     id='dropdown-variants-Primary'
                     key='Input-Token'
                 >
-                    <Dropdown.Item onSelect={() => setTokenInstance(0)} eventKey="1">DAI</Dropdown.Item>
-                    <Dropdown.Item onSelect={() => setTokenInstance(1)} eventKey="2">MKR</Dropdown.Item>
-                    <Dropdown.Item onSelect={() => setTokenInstance(2)} eventKey="3">REP</Dropdown.Item>
-                    <Dropdown.Item onSelect={() => setTokenInstance(3)} eventKey="4">USDC</Dropdown.Item>
-                    <Dropdown.Item onSelect={() => setTokenInstance(4)} eventKey="5">sETH</Dropdown.Item>
+                    {tokenData.map((token, key) => {
+                        return (
+                        <Dropdown.Item onSelect={() => setTokenInstance(key)} eventKey="1">{token.symbol}</Dropdown.Item>
+                        )
+                    })}
                 </DropdownButton>
                 <br/>
 
-                <div>
-                    <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)}/>
+                <form
+                    onSubmit={event => {
+                        event.preventDefault();
+                        this.swapToken();
+                      }}
+                >
+                    <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)} required/>
                     <br/>
-                    <Button onClick={this.swapToken}>Swap</Button>
+                    <Button type='submit' >Swap</Button>
                     <p>You will receive approximately {outputAmount} {tokenSymbol}</p>
-                </div>
+                </form>
             </div>
         )
     }
