@@ -56,7 +56,6 @@ export const setOutputAmount = (amount) => {
 }
 
 export const setWeiAmount = (amount) => {
-    console.log(amount)
     return {
         type: SET_WEI_AMOUNT, 
         payload: amount

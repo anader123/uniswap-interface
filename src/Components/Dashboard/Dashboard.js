@@ -116,15 +116,16 @@ class Dashboard extends Component {
                 {!walletConnected ?
                     <Button onClick={this.connectWallet} variant="primary">Connect Wallet</Button>
                 :
-                <div>
+                <div className='dashboard-container'>
                     <br/>
                     <div>Address: {address}</div>
                     <div>Balance: {balance} ETH</div>
-                    <br/>
-                    <span onClick={() => toggleSwapToken(true)}>Swap </span><span onClick={() => toggleSwapToken(false)}> Create Exchange</span>
-                    <br/>
-                    {swapToken ?
-                        <div>
+                    <div className='swap-toggle-container'>
+                        <span className={swapToken ? 'selected-toggle': ''} onClick={() => toggleSwapToken(true)}>Swap </span>
+                        <span className={!swapToken ? 'selected-toggle': ''} onClick={() => toggleSwapToken(false)}> Create Exchange</span>
+                    </div>
+                    <div className='dashboard-toggle-container'>
+                        {swapToken ?
                             <DropdownMenu 
                                 setTokenInstance={this.setTokenInstance} 
                                 tokenSymbol={tokenSymbol} 
@@ -133,11 +134,10 @@ class Dashboard extends Component {
                                 exchangeAddress={exchangeAddress} 
                                 tokenInstance={tokenInstance}
                             />
-
-                        </div>
-                    :
-                        <CreateExchange address={address} factoryInstance={factoryInstance}/>
-                    }
+                        :
+                            <CreateExchange address={address} factoryInstance={factoryInstance}/>
+                        }
+                    </div>
                 </div>
                 }
             </div>

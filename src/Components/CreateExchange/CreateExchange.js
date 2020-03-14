@@ -42,8 +42,7 @@ export default class CreateExchange extends Component {
         const { tokenExists, tokenAddress } = this.state;
         return (
             <div>
-                <h2>Create an Exchange</h2>
-                <label>Input the address of a token you would like to create a Uniswap Pool for</label>
+                <h4>Create an Exchange</h4>
                 <br></br>
                 <form
                     onSubmit={event => {

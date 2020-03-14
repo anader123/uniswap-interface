@@ -83,7 +83,7 @@ class DropdownMenu extends Component {
                 >
                     <input type='number' placeholder='Enter Eth Amount' onChange={(event) => this.handleInput(event.target.value)} required/>
                     <br/>
-                    <Button type='submit' >Swap</Button>
+                    <Button type='submit'>Swap</Button>
                     <p>You will receive approximately {outputAmount} {tokenSymbol}</p>
                 </form>
             </div>
